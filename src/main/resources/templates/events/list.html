@@ -1,0 +1,79 @@
+<!-- events/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('All Events')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container">
+    <h1 class="mb-4">All Events</h1>
+
+    <form method="get" th:action="@{/events}" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label class="form-label">Type</label>
+            <select name="type" class="form-select">
+                <option value="">All types</option>
+                <option th:each="t : ${eventTypes}"
+                        th:value="${t}"
+                        th:text="${t}"
+                        th:selected="${t == selectedType}"></option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Club</label>
+            <select name="clubId" class="form-select">
+                <option value="">All clubs</option>
+                <option th:each="c : ${clubs}"
+                        th:value="${c.id}"
+                        th:text="${c.name}"
+                        th:selected="${c.id == selectedClubId}"></option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">From</label>
+            <input type="date" name="from" class="form-control" th:value="${from}"/>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">To</label>
+            <input type="date" name="to" class="form-control" th:value="${to}"/>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <div th:if="${events.isEmpty()}">
+        <p class="text-muted">No events found.</p>
+    </div>
+
+    <table class="table table-hover" th:unless="${events.isEmpty()}">
+        <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Club</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${events}">
+            <td>
+                <a th:href="@{/clubs/{cid}/events/{eid}(cid=${event.clubId},eid=${event.id})}"
+                   th:text="${event.name}"></a>
+            </td>
+            <td th:text="${event.date}"></td>
+            <td th:text="${event.type}"></td>
+            <td th:text="${clubNames[event.clubId]}"></td>
+            <td>
+                <a th:href="@{/clubs/{cid}/events/{eid}/edit(cid=${event.clubId},eid=${event.id})}"
+                   class="btn btn-sm btn-warning">Edit</a>
+                <a th:href="@{/clubs/{cid}/events/{eid}/delete(cid=${event.clubId},eid=${event.id})}"
+                   class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!-- clubs/detail.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${club.name})}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container">
+    <h1 th:text="${club.name}"></h1>
+    <p class="text-muted" th:text="${club.category}"></p>
+    <p th:text="${club.description}"></p>
+
+    <hr/>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Events</h2>
+        <a th:href="@{/clubs/{id}/events/new(id=${club.id})}" class="btn btn-primary">+ New Event</a>
+    </div>
+
+    <div th:if="${events.isEmpty()}">
+        <p class="text-muted">No events yet for this club.</p>
+    </div>
+
+    <table class="table table-hover" th:unless="${events.isEmpty()}">
+        <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Location</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${events}">
+            <td>
+                <a th:href="@{/clubs/{cid}/events/{eid}(cid=${club.id},eid=${event.id})}"
+                   th:text="${event.name}"></a>
+            </td>
+            <td th:text="${event.date}"></td>
+            <td th:text="${event.type}"></td>
+            <td th:text="${event.location ?: '-'}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

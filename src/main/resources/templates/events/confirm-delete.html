@@ -1,0 +1,33 @@
+<!-- events/confirm-delete.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Delete Event')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger mt-5">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Confirm Deletion</h5>
+                </div>
+                <div class="card-body">
+                    <p>Are you sure you want to delete the event:</p>
+                    <p class="fw-bold fs-5" th:text="${event.name}"></p>
+                    <p class="text-muted">This action cannot be undone.</p>
+
+                    <form th:action="@{/clubs/{cid}/events/{eid}/delete(cid=${club.id},eid=${event.id})}"
+                          method="post">
+                        <input type="hidden" name="_method" value="DELETE"/>
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                        <a th:href="@{/clubs/{cid}/events/{eid}(cid=${club.id},eid=${event.id})}"
+                           class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>
