@@ -5,10 +5,12 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.ModelMap
 import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
@@ -24,7 +26,7 @@ class EventController (private val eventService: EventService, private val clubS
     @GetMapping
     fun listEvents(
         @RequestParam(required = false) type: EventType?,
-        @RequestParam(required = false) clubId: Long?,
+        @PathVariable @RequestParam(required = false) clubId: Long?,
         @RequestParam(required = false) from: LocalDate?,
         @RequestParam(required = false) to: LocalDate?,
         model: ModelMap
@@ -92,7 +94,7 @@ class EventController (private val eventService: EventService, private val clubS
         return "events/form"
     }
 
-    @PostMapping("/{eventId}")
+    @PutMapping("/{eventId}")
     fun updateEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -127,7 +129,7 @@ class EventController (private val eventService: EventService, private val clubS
         return "events/delete"
     }
 
-    @PostMapping("/{eventId}/delete")
+    @DeleteMapping("/{eventId}")
     fun deleteEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
