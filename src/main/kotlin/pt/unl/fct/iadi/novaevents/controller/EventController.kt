@@ -98,12 +98,10 @@ class EventController (private val eventService: EventService, private val clubS
     fun updateEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
-        @RequestParam("_method") method: String,
         @Valid @ModelAttribute("form") form: EventFormDto,
         bindingResult: BindingResult,
         model: Model
     ): String {
-        if (method.uppercase() != "PUT") throw NoSuchElementException()
 
         if (eventService.existsByNameExcluding(form.name, eventId)) {
             bindingResult.rejectValue("name", "duplicate", "An event with this name already exists")
@@ -133,9 +131,7 @@ class EventController (private val eventService: EventService, private val clubS
     fun deleteEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
-        @RequestParam("_method") method: String
     ): String {
-        if (method.uppercase() != "DELETE") throw NoSuchElementException()
         eventService.delete(eventId)
         return "redirect:/clubs/${clubId}"
     }
