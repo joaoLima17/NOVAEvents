@@ -1,7 +1,8 @@
 package pt.unl.fct.iadi.novaevents.controller.dto
 
 import jakarta.validation.constraints.NotBlank
-import org.jetbrains.annotations.NotNull
+import jakarta.validation.constraints.NotNull
+
 import pt.unl.fct.iadi.novaevents.model.EventType
 import java.time.LocalDate
 

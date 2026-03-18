@@ -1,6 +1,6 @@
 package pt.unl.fct.iadi.novaevents.service
 
-import pt.unl.fct.iadi.novaevents.controller.GlobalExceptionHandler
+
 import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
 import pt.unl.fct.iadi.novaevents.model.Event
