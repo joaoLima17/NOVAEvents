@@ -1,12 +1,32 @@
 package pt.unl.fct.iadi.novaevents.model
 
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 
+@Entity
+@Table(name = "clubs")
+class Club(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long = 0,
 
-data class Club(val id: Long,
-           val name: String,
-           val description: String,
-           val category: ClubCategory) {
-}enum class ClubCategory {
+        @Column(nullable = false)
+        var name: String = "",
+
+        @Column(length = 2000, nullable = false)
+        var description: String = "",
+
+        @Column(nullable = false)
+        @Enumerated(EnumType.STRING)
+        var category: ClubCategory = ClubCategory.CULTURAL
+)
+
+enum class ClubCategory {
     TECHNOLOGY, ARTS, SPORTS, ACADEMIC, SOCIAL, CULTURAL
 }
