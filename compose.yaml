@@ -1,14 +1,15 @@
 services:
   mysql:
     image: mysql:8
-  environment:
-    MYSQL_ROOT_PASSWORD: rootpass
-    MYSQL_DATABASE: <dbname>
-    MYSQL_USER: <user>
-    MYSQL_PASSWORD: <password>
-  ports:
-    - "3306:3306"
-  volumes:
-    - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: novaevents
+      MYSQL_USER: nova_user
+      MYSQL_PASSWORD: nova_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
 volumes:
   mysql_data:
