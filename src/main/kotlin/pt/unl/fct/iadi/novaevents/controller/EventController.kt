@@ -1,10 +1,8 @@
 package pt.unl.fct.iadi.novaevents.controller
 
-import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.ui.ModelMap
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,13 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
-import pt.unl.fct.iadi.novaevents.model.EventType
-import pt.unl.fct.iadi.novaevents.repository.EventTypeRepository
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventService
-import java.time.LocalDate
 
 @Controller
 @RequestMapping("/clubs/{clubId}/events")
