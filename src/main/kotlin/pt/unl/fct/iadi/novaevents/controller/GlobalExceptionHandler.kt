@@ -19,6 +19,5 @@ class GlobalExceptionHandler {
         return "error/404"
     }
 
-    @ModelAttribute("eventTypes")
-    fun eventTypes() = EventType.entries.toTypedArray()
+
 }

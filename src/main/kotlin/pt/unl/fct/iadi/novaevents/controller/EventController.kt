@@ -1,5 +1,6 @@
 package pt.unl.fct.iadi.novaevents.controller
 
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -15,27 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
 import pt.unl.fct.iadi.novaevents.model.EventType
+import pt.unl.fct.iadi.novaevents.repository.EventTypeRepository
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventService
 import java.time.LocalDate
 
 @Controller
 @RequestMapping("/clubs/{clubId}/events")
-class EventController (private val eventService: EventService, private val clubService: ClubService ){
+class EventController (private val eventService: EventService, private val clubService: ClubService){
 
-    @GetMapping
-    fun listEvents(
-        @RequestParam(required = false) type: EventType?,
-        @PathVariable @RequestParam(required = false) clubId: Long?,
-        @RequestParam(required = false) from: LocalDate?,
-        @RequestParam(required = false) to: LocalDate?,
-        model: ModelMap
-    ): String {
-        model.addAttribute("events", eventService.findAll(type, clubId, from, to))
-        model.addAttribute("clubs", clubService.findAll())
-        model.addAttribute("eventTypes", EventType.entries.toTypedArray())
-        return "events/list"
-    }
+
     @GetMapping("/{eventId}")
     fun eventDetail(
         @PathVariable clubId: Long,
@@ -49,12 +39,13 @@ class EventController (private val eventService: EventService, private val clubS
 
     @GetMapping("/new")
     fun createForm(@PathVariable clubId: Long, model: Model): String {
-        clubService.findById(clubId) // 404 if not found
         model.addAttribute("club", clubService.findById(clubId))
         model.addAttribute("form", EventFormDto())
-        model.addAttribute("eventTypes", EventType.values())
+        model.addAttribute("eventTypes", eventService.findAllEventTypes())
         return "events/form"
     }
+
+
     @PostMapping
     fun createEvent(
         @PathVariable clubId: Long,
@@ -67,7 +58,7 @@ class EventController (private val eventService: EventService, private val clubS
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("club", clubService.findById(clubId))
-            model.addAttribute("eventTypes", EventType.values())
+            model.addAttribute("eventTypes", eventService.findAllEventTypes())
             return "events/form"
         }
         val event = eventService.create(clubId, form)
@@ -86,11 +77,11 @@ class EventController (private val eventService: EventService, private val clubS
         model.addAttribute("form", EventFormDto(
             name = event.name,
             date = event.date,
-            type = event.type,
+            type = event.type.name,
             location = event.location ?: "",
             description = event.description ?: ""
         ))
-        model.addAttribute("eventTypes", EventType)
+        model.addAttribute("eventTypes", eventService.findAllEventTypes())
         return "events/form"
     }
 
@@ -102,14 +93,13 @@ class EventController (private val eventService: EventService, private val clubS
         bindingResult: BindingResult,
         model: Model
     ): String {
-
-        if (eventService.existsByNameExcluding(form.name, eventId)) {
+        if (!bindingResult.hasFieldErrors("name") && eventService.existsByNameExcluding(form.name, eventId)) {
             bindingResult.rejectValue("name", "duplicate", "An event with this name already exists")
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("club", clubService.findById(clubId))
             model.addAttribute("event", eventService.findById(eventId))
-            model.addAttribute("eventTypes", EventType)
+            model.addAttribute("eventTypes", eventService.findAllEventTypes())
             return "events/form"
         }
         eventService.update(eventId, form)
@@ -124,9 +114,8 @@ class EventController (private val eventService: EventService, private val clubS
     ): String {
         model.addAttribute("club", clubService.findById(clubId))
         model.addAttribute("event", eventService.findById(eventId))
-        return "events/delete"
+        return "events/confirm-delete"
     }
-
     @DeleteMapping("/{eventId}")
     fun deleteEvent(
         @PathVariable clubId: Long,

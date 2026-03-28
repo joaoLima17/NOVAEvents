@@ -3,7 +3,6 @@ package pt.unl.fct.iadi.novaevents.controller.dto
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
-import pt.unl.fct.iadi.novaevents.model.EventType
 import java.time.LocalDate
 
 class EventFormDto(
@@ -14,9 +13,8 @@ class EventFormDto(
     var date: LocalDate? = null,
 
     @field:NotNull()
-    var type: EventType? = null,
+    var type: String? = null,
 
     var location: String = "",
     var description: String = ""
-){
-}
+)
