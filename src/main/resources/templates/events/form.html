@@ -39,7 +39,7 @@
 
         <div class="mb-3">
             <label class="form-label">Type *</label>
-            <select class="form-select" th:field="*{type}"
+            <select class="form-select" th:name="type"
                     th:classappend="${#fields.hasErrors('type')} ? 'is-invalid'">
                 <option value="">-- Select type --</option>
                 <option th:each="t : ${eventTypes}" th:value="${t}" th:text="${t}"></option>
@@ -69,7 +69,7 @@
 
         <div class="mb-3">
             <label class="form-label">Name *</label>
-            <input type="text" class="form-control" th:field="*{name}"
+            <input type="text" class="form-control" name="type"
                    th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"/>
             <div class="invalid-feedback" th:errors="*{name}"></div>
         </div>
@@ -83,7 +83,7 @@
 
         <div class="mb-3">
             <label class="form-label">Type *</label>
-            <select class="form-select" th:field="*{type}"
+            <select class="form-select" name="type"
                     th:classappend="${#fields.hasErrors('type')} ? 'is-invalid'">
                 <option value="">-- Select type --</option>
                 <option th:each="t : ${eventTypes}" th:value="${t}" th:text="${t}"></option>
