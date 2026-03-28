@@ -1,32 +1,28 @@
 package pt.unl.fct.iadi.novaevents.service
 
 
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
+import pt.unl.fct.iadi.novaevents.repository.EventRepository
+import pt.unl.fct.iadi.novaevents.repository.EventTypeRepository
 import java.time.LocalDate
 
 @Service
-class EventService {
-    private var nextId = 1L
-    private val events = mutableListOf(
-        Event(nextId++, 1, "Beginner's Chess Workshop", LocalDate.of(2026, 3, 10), "Room A101", EventType.WORKSHOP, "Annual opening tournament."),
-        Event(nextId++, 2, "Spring Chess Tournament", LocalDate.of(2026, 4, 5), "Main Hall", EventType.COMPETITION, "Hands-on Arduino session."),
-        Event(nextId++, 3, "Advanced Openings Talk", LocalDate.of(2026, 5, 20), "Room A101", EventType.TALK, "A guided photo walk."),
-        Event(nextId++, 4, "Arduino Intro Workshop", LocalDate.of(2026, 3, 15), "Engineering Lab 2", EventType.WORKSHOP, "Full day hike."),
-        Event(nextId++, 5, "RoboCup Preparation Meeting", LocalDate.of(2026, 3, 28), "Engineering Lab 1", EventType.MEETING, "Screening and discussion."),
-        Event(nextId++, 6, "Sensor Integration Talk", LocalDate.of(2026, 4, 22), "Auditorium B", EventType.TALK, "Annual opening tournament."),
-        Event(nextId++, 7, "Regional Robotics Competition", LocalDate.of(2026, 6, 1), "Sports Hall", EventType.COMPETITION, "Hands-on Arduino session."),
-        Event(nextId++, 8, "Night Photography Workshop", LocalDate.of(2026, 3, 22), "Campus Rooftop", EventType.WORKSHOP, "A guided photo walk."),
-        Event(nextId++, 9, "Portrait Photography Talk", LocalDate.of(2026, 4, 14), "Arts Studio 3", EventType.TALK, "Full day hike."),
-        Event(nextId++, 10, "Photo Walk & Social", LocalDate.of(2026, 5, 9), "Main Entrance", EventType.SOCIAL, "Screening and discussion."),
-        Event(nextId++, 11, "Serra da Arrábida Hike", LocalDate.of(2026, 3, 29), "Bus Stop Central", EventType.OTHER, "Annual opening tournament."),
-        Event(nextId++, 12, "Trail Safety Workshop", LocalDate.of(2026, 4, 8), "Room C205", EventType.WORKSHOP, "Hands-on Arduino session."),
-        Event(nextId++, 13, "Spring Camping Trip", LocalDate.of(2026, 5, 15), "Bus Stop Central", EventType.SOCIAL, "A guided photo walk."),
-        Event(nextId++, 14, "Kubrick Retrospective Screening", LocalDate.of(2026, 3, 18), "Cinema Room", EventType.SOCIAL, "Full day hike."),
-        Event(nextId++, 15, "Screenwriting Workshop", LocalDate.of(2026, 4, 30), "Arts Studio 1", EventType.WORKSHOP, "Screening and discussion.")
-    )
+class EventService(
+    private val eventRepository: EventRepository,
+    private val eventTypeRepository: EventTypeRepository
+) {
+    fun findAllEventTypes(): List<EventType> = eventTypeRepository.findAll()
+
+
+    fun findEventTypeByName(name: String): EventType =
+        eventTypeRepository.findByName(name)
+            ?: throw NoSuchElementException("EventType '$name' not found")
+
+    @Transactional(readOnly = true)
     fun findAll(
         type: EventType? = null,
         clubId: Long? = null,

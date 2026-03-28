@@ -8,15 +8,15 @@ import java.time.LocalDate
 
 class EventFormDto(
     @field:NotBlank(message = "Name is required")
-    val name: String = "",
+    var name: String = "",
 
     @field:NotNull()
-    val date: LocalDate? = null,
+    var date: LocalDate? = null,
 
     @field:NotNull()
-    val type: EventType? = null,
+    var type: EventType? = null,
 
-    val location: String = "",
-    val description: String = ""
+    var location: String = "",
+    var description: String = ""
 ){
 }

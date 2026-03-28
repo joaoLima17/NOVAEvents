@@ -90,7 +90,7 @@ class EventController (private val eventService: EventService, private val clubS
             location = event.location ?: "",
             description = event.description ?: ""
         ))
-        model.addAttribute("eventTypes", EventType.values())
+        model.addAttribute("eventTypes", EventType)
         return "events/form"
     }
 
@@ -109,7 +109,7 @@ class EventController (private val eventService: EventService, private val clubS
         if (bindingResult.hasErrors()) {
             model.addAttribute("club", clubService.findById(clubId))
             model.addAttribute("event", eventService.findById(eventId))
-            model.addAttribute("eventTypes", EventType.values())
+            model.addAttribute("eventTypes", EventType)
             return "events/form"
         }
         eventService.update(eventId, form)

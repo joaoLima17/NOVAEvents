@@ -7,8 +7,6 @@ import pt.unl.fct.iadi.novaevents.model.EventType
 @Repository
 interface EventTypeRepository: JpaRepository<EventType, Long> {
 
-    override fun <S : EventType?> save(entity: S & Any): S & Any {
-        TODO("Not yet implemented")
-    }
+    fun findByName(name: String): EventType?
 
 }
