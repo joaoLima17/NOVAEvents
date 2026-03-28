@@ -12,8 +12,8 @@ import java.time.LocalDate
 
 @Service
 class EventService(
-    private val eventRepository: EventRepository,
-    private val eventTypeRepository: EventTypeRepository
+    private var eventRepository: EventRepository,
+    private var eventTypeRepository: EventTypeRepository
 ) {
     fun findAllEventTypes(): List<EventType> = eventTypeRepository.findAll()
 

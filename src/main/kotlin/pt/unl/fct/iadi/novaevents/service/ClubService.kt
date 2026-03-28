@@ -5,7 +5,7 @@ import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.repository.ClubRepository
 
 @Service
-class ClubService(private val clubRepository: ClubRepository) {
+class ClubService(private var clubRepository: ClubRepository) {
 
 
 

@@ -11,9 +11,9 @@ import java.time.LocalDate
 
 @Component
 class DataInitializer(
-    private val eventTypeRepository: EventTypeRepository,
-    private val clubRepository: ClubRepository,
-    private val eventRepository: EventRepository
+    private var eventTypeRepository: EventTypeRepository,
+    private var clubRepository: ClubRepository,
+    private var eventRepository: EventRepository
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments?) {
 
