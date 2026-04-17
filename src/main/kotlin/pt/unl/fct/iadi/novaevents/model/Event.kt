@@ -26,6 +26,9 @@ class Event (
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id", nullable = false)
     var type: EventType = EventType(),
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    var owner: AppUser? = null,
     var description: String? = null
 )
 

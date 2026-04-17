@@ -1,6 +1,6 @@
 <!-- events/list.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{layout :: head('All Events')}"></head>
 <body>
 <nav th:replace="~{layout :: navbar}"></nav>
@@ -13,9 +13,9 @@
             <select name="type" class="form-select">
                 <option value="">All types</option>
                 <option th:each="t : ${eventTypes}"
-                        th:value="${t}"
-                        th:text="${t}"
-                        th:selected="${t == selectedType}"></option>
+                    th:value="${t.name}"
+                    th:text="${t.name}"
+                    th:selected="${t.name == selectedType}"></option>
             </select>
         </div>
         <div class="col-md-3">
@@ -62,12 +62,14 @@
                    th:text="${event.name}"></a>
             </td>
             <td th:text="${event.date}"></td>
-            <td th:text="${event.type}"></td>
+                <td th:text="${event.type.name}"></td>
             <td th:text="${clubNames[event.clubId]}"></td>
             <td>
                 <a th:href="@{/clubs/{cid}/events/{eid}/edit(cid=${event.clubId},eid=${event.id})}"
+                         sec:authorize="isAuthenticated() and event.owner != null and #authentication.name == event.owner.username"
                    class="btn btn-sm btn-warning">Edit</a>
                 <a th:href="@{/clubs/{cid}/events/{eid}/delete(cid=${event.clubId},eid=${event.id})}"
+                         sec:authorize="hasRole('ADMIN') or (isAuthenticated() and event.owner != null and #authentication.name == event.owner.username)"
                    class="btn btn-sm btn-danger">Delete</a>
             </td>
         </tr>

@@ -19,6 +19,10 @@ interface EventRepository : JpaRepository<Event, Long> {
 
     fun countByClubId(clubId: Long): Long
 
+    fun existsByIdAndOwnerUsername(id: Long, username: String): Boolean
+
+    fun findByOwnerIsNull(): List<Event>
+
     @Query("""
         SELECT e FROM Event e
         JOIN e.type t
