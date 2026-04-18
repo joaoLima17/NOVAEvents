@@ -35,6 +35,5 @@ class GlobalEventsController(
         model.addAttribute("clubNames", clubs.associate { it.id to it.name })
         return "events/list"
     }
-    @GetMapping("/login")
-    fun showLogin() = "login/login"
+
 }
