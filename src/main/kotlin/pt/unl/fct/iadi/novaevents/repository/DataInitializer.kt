@@ -2,21 +2,31 @@ package pt.unl.fct.iadi.novaevents.repository
 
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategory
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
+import pt.unl.fct.iadi.novaevents.model.appRole
+import pt.unl.fct.iadi.novaevents.model.appUser
 import java.time.LocalDate
 
 @Component
 class DataInitializer(
     private var eventTypeRepository: EventTypeRepository,
     private var clubRepository: ClubRepository,
-    private var eventRepository: EventRepository
+    private var eventRepository: EventRepository,
+    private var userRepository: AppUserRepository,
+    private var encoder: BCryptPasswordEncoder
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments?) {
-
+        if (!userRepository.existsByUsername("alice")) {
+            val alice = userRepository.save(appUser(username = "alice", password = encoder.encode("password123")))
+            alice.roles.add(appRole(roleName = "ROLE_EDITOR", user = alice))
+            userRepository.save(alice)
+            // repeat for bob (ROLE_EDITOR) and charlie (ROLE_ADMIN)
+        }
         if (clubRepository.count() > 0) return
 
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
+import pt.unl.fct.iadi.novaevents.model.appUser
 import pt.unl.fct.iadi.novaevents.repository.EventRepository
 import pt.unl.fct.iadi.novaevents.repository.EventTypeRepository
 import java.time.LocalDate
@@ -49,7 +50,7 @@ class EventService(
         eventRepository.existsByNameIgnoreCaseAndIdNot(name, excludeId)
 
     @Transactional
-    fun create(clubId: Long, form: EventFormDto): Event {
+    fun create(clubId: Long, form: EventFormDto, user: appUser): Event {
         val eventType = findEventTypeByName(form.type!!)
         val event = Event(
             clubId = clubId,
@@ -57,13 +58,14 @@ class EventService(
             date = form.date!!,
             location = form.location.ifBlank { null },
             type = eventType,
-            description = form.description.ifBlank { null }
+            description = form.description.ifBlank { null },
+            owner = user
         )
         return eventRepository.save(event)
     }
 
     @Transactional
-    fun update(id: Long, form: EventFormDto): Event {
+    fun update(id: Long, form: EventFormDto, user: appUser): Event {
         val event = findById(id)
         val eventType = findEventTypeByName(form.type!!)
         event.name = form.name
@@ -71,6 +73,7 @@ class EventService(
         event.location = form.location.ifBlank { null }
         event.type = eventType
         event.description = form.description.ifBlank { null }
+        event.owner = user
         return eventRepository.save(event)
     }
 
