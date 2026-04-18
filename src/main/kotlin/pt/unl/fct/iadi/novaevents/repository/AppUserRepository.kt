@@ -6,6 +6,6 @@ import pt.unl.fct.iadi.novaevents.model.appUser
 @Repository
 
 interface AppUserRepository: JpaRepository<appUser, Long> {
-    fun findByUsername(username: String): appUser
+    fun findByUsername(username: String): appUser?
 
 }

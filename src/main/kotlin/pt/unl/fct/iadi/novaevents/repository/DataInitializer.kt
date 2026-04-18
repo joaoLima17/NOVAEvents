@@ -2,10 +2,8 @@ package pt.unl.fct.iadi.novaevents.repository
 
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
-import org.springframework.context.annotation.Bean
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Component
@@ -25,7 +23,7 @@ class DataInitializer(
     private val encoder: PasswordEncoder
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments?) {
-        if (!userDetailsManager.userExists("alice")) {
+        if (userRepository.count() == 0L) {
             listOf(
                 User("alice", encoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_EDITOR"))),
                 User("bob", encoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_EDITOR"))),
@@ -85,7 +83,9 @@ class DataInitializer(
         eventRepository.save(Event(clubId = hiking.id,   name = "Spring Camping Trip",            date = LocalDate.of(2026, 5, 15), location = "Bus Stop Central",   type = social,      description = "Weekend camping at Parque Natural da Serra de São Mamede.", owner = alice))
 
 
-        eventRepository.save(Event(clubId = film.id,     name = "Kubrick Retrospective Screening",date = LocalDate.of(2026, 3, 18), location = "Cinema Room",        type = social,      description = "2001: A Space Odyssey followed by discussion.", owner = alice))
+        eventRepository.save(Event(
+            clubId = film.id,     name = "Kubrick Retrospective Screening",
+            date = LocalDate.of(2026, 3, 18), location = "Cinema Room",        type = social,      description = "2001: A Space Odyssey followed by discussion.", owner = alice))
         eventRepository.save(Event(clubId = film.id,     name = "Screenwriting Workshop",         date = LocalDate.of(2026, 4, 30), location = "Arts Studio 1",      type = workshop,    description = "Introduction to three-act structure and scene writing.", owner = alice))
     }
 
