@@ -1,20 +1,28 @@
 package pt.unl.fct.iadi.novaevents.security
 
+
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication
+import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.savedrequest.CookieRequestCache
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
-class JwtAuthSuccessHandler(private val jwtService: JwtService) : AuthenticationSuccessHandler {
-    private val requestCache = CookieRequestCache()
-    override fun onAuthenticationSuccess(request: HttpServletRequest, response: HttpServletResponse,
-                                         authentication: Authentication
+class JwtAuthSuccessHandler(
+    private val jwtService: JwtService
+) : AuthenticationSuccessHandler {
+
+    override fun onAuthenticationSuccess(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        authentication: Authentication
     ) {
-        val token = jwtService.generate(authentication.name, authentication.authorities.map { it.authority })
+        val requestCache = CookieRequestCache()
+        val roles = authentication.authorities.map { it.authority }
+        val token = jwtService.generate(authentication.name, roles)
         val cookie = Cookie("jwt", token).apply {
             isHttpOnly = true
             path = "/"

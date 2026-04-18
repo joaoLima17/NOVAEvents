@@ -3,11 +3,12 @@ package pt.unl.fct.iadi.novaevents.security
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
-class LoggingInterceptor(private val registry: ApiTokenRegistry) : HandlerInterceptor {
+class LoggingInterceptor : HandlerInterceptor {
     private val log = LoggerFactory.getLogger(LoggingInterceptor::class.java)
     override fun afterCompletion(
         request: HttpServletRequest,
@@ -15,8 +16,20 @@ class LoggingInterceptor(private val registry: ApiTokenRegistry) : HandlerInterc
         handler: Any,
         ex: Exception?,
     ) {
-        val appName = registry.tokenToApp[request.getHeader("X-Api-Token")] ?: "unknown"
-        val principal = request.userPrincipal?.name ?: "anonymous"
-        log.info("[{}] [{}] {} {} [{}]", appName, principal, request.method, request.requestURI, response.status)
+        val auth = SecurityContextHolder.getContext().authentication
+
+        val principal =
+            if (auth == null || !auth.isAuthenticated)
+                "anonymous"
+            else
+                auth.name
+
+        log.info(
+            "[{}] {} {} [{}]",
+            principal,
+            request.method,
+            request.requestURI,
+            response.status
+        )
     }
 }
