@@ -2,7 +2,6 @@ package pt.unl.fct.iadi.novaevents.controller
 
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -90,7 +89,6 @@ class EventController (private val eventService: EventService, private val clubS
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
         @Valid @ModelAttribute("form") form: EventFormDto,
-        user: appUser,
         bindingResult: BindingResult,
         model: Model
     ): String {
@@ -103,7 +101,7 @@ class EventController (private val eventService: EventService, private val clubS
             model.addAttribute("eventTypes", eventService.findAllEventTypes())
             return "events/form"
         }
-        eventService.update(eventId, form, user)
+        eventService.update(eventId, form)
         return "redirect:/clubs/${clubId}/events/${eventId}"
     }
 
