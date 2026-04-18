@@ -61,7 +61,7 @@ class DataInitializer(
                 date = LocalDate.of(2026, 3, 10),
                 location = "Room A101",
                 type = workshop,
-                description = "An introductory session for new members."
+                description = "An introductory session for new members.",  owner = alice
             )
         )
         eventRepository.save(Event(clubId = chess.id,    name = "Spring Chess Tournament",        date = LocalDate.of(2026, 4,  5), location = "Main Hall",          type = competition, description = "Annual spring tournament open to all members.", owner = alice))

@@ -2,6 +2,7 @@ package pt.unl.fct.iadi.novaevents.service
 
 
 import jakarta.transaction.Transactional
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
 import pt.unl.fct.iadi.novaevents.model.Event
@@ -48,7 +49,9 @@ class EventService(
 
     fun existsByNameExcluding(name: String, excludeId: Long): Boolean =
         eventRepository.existsByNameIgnoreCaseAndIdNot(name, excludeId)
-
+    @PreAuthorize(
+        "@eventSecurity.isOwner(#id, authentication.name) or hasRole('ADMIN')"
+    )
     @Transactional
     fun create(clubId: Long, form: EventFormDto, user: appUser): Event {
         val eventType = findEventTypeByName(form.type!!)
@@ -63,9 +66,9 @@ class EventService(
         )
         return eventRepository.save(event)
     }
-
+    @PreAuthorize("@eventSecurity.isOwner(#id, authentication.name)")
     @Transactional
-    fun update(id: Long, form: EventFormDto, user: appUser): Event {
+    fun update(id: Long, form: EventFormDto): Event {
         val event = findById(id)
         val eventType = findEventTypeByName(form.type!!)
         event.name = form.name
@@ -73,7 +76,6 @@ class EventService(
         event.location = form.location.ifBlank { null }
         event.type = eventType
         event.description = form.description.ifBlank { null }
-        event.owner = user
         return eventRepository.save(event)
     }
 

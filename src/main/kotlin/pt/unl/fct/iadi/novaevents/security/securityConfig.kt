@@ -3,6 +3,7 @@ package pt.unl.fct.iadi.novaevents.security
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -21,6 +22,7 @@ import pt.unl.fct.iadi.novaevents.repository.AppUserRepository
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 class SecurityConfig(private val appUserRepository: AppUserRepository, private val jwtCookieAuthFilter: JwtCookieAuthFilter, private val JwtAuthSuccessHandler: JwtAuthSuccessHandler) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -29,7 +31,6 @@ class SecurityConfig(private val appUserRepository: AppUserRepository, private v
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .csrf { it.disable() }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }

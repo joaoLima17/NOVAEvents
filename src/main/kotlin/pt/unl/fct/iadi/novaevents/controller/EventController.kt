@@ -18,7 +18,7 @@ import pt.unl.fct.iadi.novaevents.model.appUser
 import pt.unl.fct.iadi.novaevents.repository.AppUserDetailsManager
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventService
-@EnableMethodSecurity
+
 @Controller
 @RequestMapping("/clubs/{clubId}/events")
 class EventController (private val eventService: EventService, private val clubService: ClubService, private val Useranager: AppUserDetailsManager) {
