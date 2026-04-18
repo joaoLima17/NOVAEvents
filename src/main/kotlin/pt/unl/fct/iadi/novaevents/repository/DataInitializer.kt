@@ -3,16 +3,16 @@ package pt.unl.fct.iadi.novaevents.repository
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Component
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategory
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
-import pt.unl.fct.iadi.novaevents.model.Role
-import pt.unl.fct.iadi.novaevents.model.appRole
-import pt.unl.fct.iadi.novaevents.model.appUser
 import java.time.LocalDate
 
 @Component
@@ -20,41 +20,18 @@ class DataInitializer(
     private var eventTypeRepository: EventTypeRepository,
     private var clubRepository: ClubRepository,
     private var eventRepository: EventRepository,
-    private var userRepository: AppUserRepository,
+    private val userDetailsManager: UserDetailsManager,
     private val encoder: PasswordEncoder
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments?) {
-        if (userRepository.findByUsername("alice") == null) {
-
-            val alice = appUser(
-                username = "alice",
-                password = encoder.encode("password123")
-            )
-
-            alice.roles.add(appRole(role= Role.ROLE_EDITOR, user = alice))
-            userRepository.save(alice)
-        }
-        if (userRepository.findByUsername("bob") == null) {
-
-            val bob = appUser(
-                username = "bob",
-                password = encoder.encode("password123")
-            )
-
-            bob.roles.add(appRole(role= Role.ROLE_EDITOR, user = bob))
-            userRepository.save(bob)
+        if (!userDetailsManager.userExists("alice")) {
+            listOf(
+                User("alice", encoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_EDITOR"))),
+                User("bob", encoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_EDITOR"))),
+                User("charlie", encoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_ADMIN"))),
+            ).forEach { userDetailsManager.createUser(it) }
         }
 
-        if (userRepository.findByUsername("charlie") == null) {
-
-            val charlie = appUser(
-                username = "charlie",
-                password = encoder.encode("password123")
-            )
-
-            charlie.roles.add(appRole(role = Role.ROLE_ADMIN, user = charlie))
-            userRepository.save(charlie)
-        }
         if (clubRepository.count() > 0) return
 
 

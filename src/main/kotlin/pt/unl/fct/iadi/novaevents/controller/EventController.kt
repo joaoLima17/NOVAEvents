@@ -2,6 +2,7 @@ package pt.unl.fct.iadi.novaevents.controller
 
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -17,7 +18,7 @@ import pt.unl.fct.iadi.novaevents.model.appUser
 import pt.unl.fct.iadi.novaevents.repository.AppUserDetailsManager
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventService
-
+@EnableMethodSecurity
 @Controller
 @RequestMapping("/clubs/{clubId}/events")
 class EventController (private val eventService: EventService, private val clubService: ClubService, private val Useranager: AppUserDetailsManager) {

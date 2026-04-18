@@ -21,7 +21,7 @@ import pt.unl.fct.iadi.novaevents.repository.AppUserRepository
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(private val appUserRepository: AppUserRepository) {
+class SecurityConfig(private val appUserRepository: AppUserRepository, private val jwtCookieAuthFilter: JwtCookieAuthFilter, private val JwtAuthSuccessHandler: JwtAuthSuccessHandler) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
     @Bean
@@ -44,7 +44,8 @@ class SecurityConfig(private val appUserRepository: AppUserRepository) {
                 csrf.csrfTokenRepository(CookieCsrfTokenRepository())
                 csrf.csrfTokenRequestHandler(CsrfTokenRequestAttributeHandler())
             }
-            .addFilterBefore(JwtCookieAuthFilter,
+            .addFilterBefore(
+                jwtCookieAuthFilter,
                 UsernamePasswordAuthenticationFilter::class.java)
             .authorizeHttpRequests { auth ->
                 auth
