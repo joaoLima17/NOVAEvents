@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.appUser
 @Repository
-interface AppUserRepository : JpaRepository<appUser, Long>
+interface AppUserRepository : JpaRepository<appUser, Long> {
+    fun findByUsername(username: String): pt.unl.fct.iadi.novaevents.model.appUser
+}

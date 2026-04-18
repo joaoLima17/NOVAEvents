@@ -2,12 +2,15 @@ package pt.unl.fct.iadi.novaevents.repository
 
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
+import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategory
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
+import pt.unl.fct.iadi.novaevents.model.Role
 import pt.unl.fct.iadi.novaevents.model.appRole
 import pt.unl.fct.iadi.novaevents.model.appUser
 import java.time.LocalDate
@@ -18,14 +21,39 @@ class DataInitializer(
     private var clubRepository: ClubRepository,
     private var eventRepository: EventRepository,
     private var userRepository: AppUserRepository,
-    private var encoder: BCryptPasswordEncoder
+    private val encoder: PasswordEncoder
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments?) {
-        if (!userRepository.existsByUsername("alice")) {
-            val alice = userRepository.save(appUser(username = "alice", password = encoder.encode("password123")))
-            alice.roles.add(appRole(roleName = "ROLE_EDITOR", user = alice))
+        if (userRepository.findByUsername("alice") == null) {
+
+            val alice = appUser(
+                username = "alice",
+                password = encoder.encode("password123")
+            )
+
+            alice.roles.add(appRole(role= Role.ROLE_EDITOR, user = alice))
             userRepository.save(alice)
-            // repeat for bob (ROLE_EDITOR) and charlie (ROLE_ADMIN)
+        }
+        if (userRepository.findByUsername("bob") == null) {
+
+            val bob = appUser(
+                username = "bob",
+                password = encoder.encode("password123")
+            )
+
+            bob.roles.add(appRole(role= Role.ROLE_EDITOR, user = bob))
+            userRepository.save(bob)
+        }
+
+        if (userRepository.findByUsername("charlie") == null) {
+
+            val charlie = appUser(
+                username = "charlie",
+                password = encoder.encode("password123")
+            )
+
+            charlie.roles.add(appRole(role = Role.ROLE_ADMIN, user = charlie))
+            userRepository.save(charlie)
         }
         if (clubRepository.count() > 0) return
 
@@ -81,5 +109,10 @@ class DataInitializer(
 
         eventRepository.save(Event(clubId = film.id,     name = "Kubrick Retrospective Screening",date = LocalDate.of(2026, 3, 18), location = "Cinema Room",        type = social,      description = "2001: A Space Odyssey followed by discussion."))
         eventRepository.save(Event(clubId = film.id,     name = "Screenwriting Workshop",         date = LocalDate.of(2026, 4, 30), location = "Arts Studio 1",      type = workshop,    description = "Introduction to three-act structure and scene writing."))
+    }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
     }
 }

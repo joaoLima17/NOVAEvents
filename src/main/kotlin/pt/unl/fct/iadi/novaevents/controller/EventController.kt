@@ -42,7 +42,7 @@ class EventController (private val eventService: EventService, private val clubS
         return "events/form"
     }
 
-
+    @PreAuthorize("@eventService.isOwner(#eventId, authentication.name) or hasRole('ADMIN')")
     @PostMapping
     fun createEvent(
         @PathVariable clubId: Long,
@@ -116,6 +116,8 @@ class EventController (private val eventService: EventService, private val clubS
         model.addAttribute("event", eventService.findById(eventId))
         return "events/confirm-delete"
     }
+
+    @PreAuthorize("@eventService.isOwner(#eventId, authentication.name) or hasRole('ADMIN')")
     @DeleteMapping("/{eventId}")
     fun deleteEvent(
         @PathVariable clubId: Long,
