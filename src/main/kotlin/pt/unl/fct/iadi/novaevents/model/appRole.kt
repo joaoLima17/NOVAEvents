@@ -1,8 +1,7 @@
 package pt.unl.fct.iadi.novaevents.model
 
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
+
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
@@ -14,7 +13,7 @@ import jakarta.persistence.Table
 class appRole (
     @Id @GeneratedValue
     var id:Long? = 0,
-    var role: Role? = null,
+    var role: Role = Role.ROLE_EDITOR,
 
     @ManyToOne
     @JoinColumn(name = "user_id")

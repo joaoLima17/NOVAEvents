@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Service
+import pt.unl.fct.iadi.novaevents.model.Role
+import pt.unl.fct.iadi.novaevents.model.appRole
 import pt.unl.fct.iadi.novaevents.model.appUser
 @Service
 class AppUserDetailsManager(private val userRepository: AppUserRepository) : UserDetailsManager {
@@ -13,14 +15,11 @@ class AppUserDetailsManager(private val userRepository: AppUserRepository) : Use
     override fun loadUserByUsername(username: String): UserDetails {
         val user: appUser = userRepository.findByUsername(username) ?:
         throw UsernameNotFoundException(username)
-        val authorities = user.roles.map {
-            SimpleGrantedAuthority(it.role as String?)
-        }
 
-        return User(user.username, user.password, authorities)
+        return User(user.username, user.password, user.roles.map { SimpleGrantedAuthority(it.role.name)})
     }
 
-    override fun createUser(user: UserDetails?) {
+    override fun createUser(user: UserDetails) {
         TODO("Not yet implemented")
     }
 
