@@ -1,6 +1,8 @@
 package pt.unl.fct.iadi.novaevents.controller
 
 import jakarta.validation.Valid
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -45,7 +47,8 @@ class EventController (private val eventService: EventService, private val clubS
         @PathVariable clubId: Long,
         @Valid @ModelAttribute("form") form: EventFormDto,
         bindingResult: BindingResult,
-        model: Model
+        model: Model,
+        authentication: Authentication
     ): String {
         if (eventService.existsByName(form.name)) {
             bindingResult.rejectValue("name", "duplicate", "An event with this name already exists")
@@ -55,11 +58,12 @@ class EventController (private val eventService: EventService, private val clubS
             model.addAttribute("eventTypes", eventService.findAllEventTypes())
             return "events/form"
         }
-        val event = eventService.create(clubId, form)
+        val event = eventService.create(clubId, form, authentication.name)
         return "redirect:/clubs/${clubId}/events/${event.id}"
     }
 
     @GetMapping("/{eventId}/edit")
+    @PreAuthorize("@eventOwnershipService.isOwner(#eventId, authentication.name)")
     fun editForm(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -80,6 +84,7 @@ class EventController (private val eventService: EventService, private val clubS
     }
 
     @PutMapping("/{eventId}")
+    @PreAuthorize("@eventOwnershipService.isOwner(#eventId, authentication.name)")
     fun updateEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -101,6 +106,7 @@ class EventController (private val eventService: EventService, private val clubS
     }
 
     @GetMapping("/{eventId}/delete")
+    @PreAuthorize("hasRole('ADMIN') or @eventOwnershipService.isOwner(#eventId, authentication.name)")
     fun deleteConfirm(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -111,6 +117,7 @@ class EventController (private val eventService: EventService, private val clubS
         return "events/confirm-delete"
     }
     @DeleteMapping("/{eventId}")
+    @PreAuthorize("hasRole('ADMIN') or @eventOwnershipService.isOwner(#eventId, authentication.name)")
     fun deleteEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,

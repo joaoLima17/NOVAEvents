@@ -1,6 +1,6 @@
 <!-- events/detail.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{layout :: head(${event.name})}"></head>
 <body>
 <nav th:replace="~{layout :: navbar}"></nav>
@@ -38,12 +38,18 @@
             <th>Description</th>
             <td th:text="${event.description ?: '-'}"></td>
         </tr>
+        <tr>
+            <th>Created by</th>
+            <td th:text="${event.owner != null ? event.owner.username : '-'}"></td>
+        </tr>
     </table>
 
     <div class="mt-3">
         <a th:href="@{/clubs/{cid}/events/{eid}/edit(cid=${club.id},eid=${event.id})}"
+              sec:authorize="isAuthenticated() and event.owner != null and #authentication.name == event.owner.username"
            class="btn btn-warning">Edit</a>
         <a th:href="@{/clubs/{cid}/events/{eid}/delete(cid=${club.id},eid=${event.id})}"
+              sec:authorize="hasRole('ADMIN') or (isAuthenticated() and event.owner != null and #authentication.name == event.owner.username)"
            class="btn btn-danger">Delete</a>
         <a th:href="@{/clubs/{id}(id=${club.id})}" class="btn btn-secondary">Back to Club</a>
     </div>
