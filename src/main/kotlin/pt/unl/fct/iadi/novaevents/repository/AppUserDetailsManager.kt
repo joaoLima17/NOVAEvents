@@ -20,15 +20,32 @@ class AppUserDetailsManager(private val userRepository: AppUserRepository) : Use
     }
 
     override fun createUser(user: UserDetails) {
-        TODO("Not yet implemented")
+       /* val roles = user.authorities.map {
+            appRole(role = it.)
+        }
+
+        val appUser = appUser(
+            username = user.username,
+            password = user.password,
+            roles = roles.toMutableList()
+        )
+*/
+        val appUser = appUser(
+            username = user.username,
+            password = user.password
+        )
+        userRepository.save(appUser)
     }
 
     override fun updateUser(user: UserDetails?) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteUser(username: String?) {
-        TODO("Not yet implemented")
+    override fun deleteUser(username: String) {
+       /*val user = userRepository.findByUsername(username)
+
+            userRepository.delete(user)
+        }*/
     }
 
     override fun changePassword(oldPassword: String?, newPassword: String?) {
