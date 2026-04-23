@@ -80,12 +80,7 @@
             <artifactId>spring-security-test</artifactId>
 
         </dependency>
-        <!-- Source: https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.14</version>
-        </dependency>
+
         <!-- Source: https://mvnrepository.com/artifact/org.htmlunit/htmlunit -->
         <dependency>
             <groupId>org.htmlunit</groupId>
