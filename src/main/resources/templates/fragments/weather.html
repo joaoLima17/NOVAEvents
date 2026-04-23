@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Fragment returned by GET /api/weather (Accept: text/html).
+  The 'raining' model attribute is: true | false | null
+-->
+<th:block th:fragment="result">
+    <span th:if="${raining == null}"   class="text-secondary">Weather data unavailable.</span>
+    <span th:if="${raining == true}"   class="badge bg-warning text-dark">Raining</span>
+    <span th:if="${raining == false}"  class="badge bg-success">Clear</span>
+</th:block>
+</body>
+</html>

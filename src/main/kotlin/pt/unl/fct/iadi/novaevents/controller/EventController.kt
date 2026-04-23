@@ -17,10 +17,12 @@ import pt.unl.fct.iadi.novaevents.model.appUser
 import pt.unl.fct.iadi.novaevents.repository.AppUserDetailsManager
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventService
+import pt.unl.fct.iadi.novaevents.service.WeatherService
 
+private const val HIKING_CLUB_NAME = "Hiking & Outdoors Club"
 @Controller
 @RequestMapping("/clubs/{clubId}/events")
-class EventController (private val eventService: EventService, private val clubService: ClubService, private val Useranager: AppUserDetailsManager) {
+class EventController (private val eventService: EventService, private val clubService: ClubService, private val weatherService: WeatherService, private val Useranager: AppUserDetailsManager) {
 
 
     @GetMapping("/{eventId}")
@@ -51,13 +53,32 @@ class EventController (private val eventService: EventService, private val clubS
         bindingResult: BindingResult,
         model: Model
     ): String {
+        val club = clubService.findById(clubId)
         if (eventService.existsByName(form.name)) {
             bindingResult.rejectValue("name", "duplicate", "An event with this name already exists")
+        }
+        // Outdoor club location validation
+        if (club.name == HIKING_CLUB_NAME && form.location.isBlank()) {
+            bindingResult.rejectValue("location", "required", "Location is required for outdoor events")
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("club", clubService.findById(clubId))
             model.addAttribute("eventTypes", eventService.findAllEventTypes())
             return "events/form"
+        }
+
+        // Weather check for outdoor club (only if location is provided)
+        if (club.name == HIKING_CLUB_NAME && form.location.isNotBlank()) {
+            val raining = weatherService.isRaining(form.location)
+            if (raining == true) {
+                bindingResult.rejectValue(
+                    "location", "weather",
+                    "It is currently raining at \"${form.location}\" — outdoor events cannot be created in bad weather"
+                )
+                model.addAttribute("club", club)
+                model.addAttribute("eventTypes", eventService.findAllEventTypes())
+                return "events/form"
+            }
         }
         val event = eventService.create(clubId, form, user)
         return "redirect:/clubs/${clubId}/events/${event.id}"

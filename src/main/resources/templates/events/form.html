@@ -1,4 +1,3 @@
-<!-- events/form.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head(${event == null ? 'New Event' : 'Edit Event'})}"></head>
@@ -39,17 +38,36 @@
 
         <div class="mb-3">
             <label class="form-label">Type *</label>
-            <select class="form-select" th:name="type"
+            <select class="form-select" th:field="*{type}"
                     th:classappend="${#fields.hasErrors('type')} ? 'is-invalid'">
                 <option value="">-- Select type --</option>
-                <option th:each="t : ${eventTypes}" th:value="${t}" th:text="${t}"></option>
+                <option th:each="t : ${eventTypes}" th:value="${t.name}" th:text="${t.name}"></option>
             </select>
             <div class="invalid-feedback" th:errors="*{type}"></div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Location</label>
-            <input type="text" class="form-control" th:field="*{location}"/>
+            <div class="input-group">
+                <input type="text" class="form-control" th:field="*{location}" id="locationInput"
+                       th:classappend="${#fields.hasErrors('location')} ? 'is-invalid'"/>
+                <!-- Check Weather JS button -->
+                <button type="button" class="btn btn-outline-secondary" id="checkWeatherJs"
+                        onclick="checkWeatherJS()">
+                    Check Weather JS
+                </button>
+                <!-- Check Weather HTMX button -->
+                <button type="button" class="btn btn-outline-info"
+                        hx-get="/api/weather"
+                        hx-include="#locationInput"
+                        hx-target="#weatherResult"
+                        hx-swap="innerHTML">
+                    Check Weather HTMX
+                </button>
+            </div>
+            <div class="invalid-feedback d-block" th:errors="*{location}"></div>
+            <!-- Weather result container (updated by both buttons) -->
+            <div id="weatherResult" class="mt-1"></div>
         </div>
 
         <div class="mb-3">
@@ -69,7 +87,7 @@
 
         <div class="mb-3">
             <label class="form-label">Name *</label>
-            <input type="text" class="form-control" name="type"
+            <input type="text" class="form-control" th:field="*{name}"
                    th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"/>
             <div class="invalid-feedback" th:errors="*{name}"></div>
         </div>
@@ -83,17 +101,33 @@
 
         <div class="mb-3">
             <label class="form-label">Type *</label>
-            <select class="form-select" name="type"
+            <select class="form-select" th:field="*{type}"
                     th:classappend="${#fields.hasErrors('type')} ? 'is-invalid'">
                 <option value="">-- Select type --</option>
-                <option th:each="t : ${eventTypes}" th:value="${t}" th:text="${t}"></option>
+                <option th:each="t : ${eventTypes}" th:value="${t.name}" th:text="${t.name}"></option>
             </select>
             <div class="invalid-feedback" th:errors="*{type}"></div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Location</label>
-            <input type="text" class="form-control" th:field="*{location}"/>
+            <div class="input-group">
+                <input type="text" class="form-control" th:field="*{location}" id="locationInputEdit"
+                       th:classappend="${#fields.hasErrors('location')} ? 'is-invalid'"/>
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="checkWeatherJS('locationInputEdit', 'weatherResultEdit')">
+                    Check Weather JS
+                </button>
+                <button type="button" class="btn btn-outline-info"
+                        hx-get="/api/weather"
+                        hx-include="#locationInputEdit"
+                        hx-target="#weatherResultEdit"
+                        hx-swap="innerHTML">
+                    Check Weather HTMX
+                </button>
+            </div>
+            <div class="invalid-feedback d-block" th:errors="*{location}"></div>
+            <div id="weatherResultEdit" class="mt-1"></div>
         </div>
 
         <div class="mb-3">
@@ -107,5 +141,52 @@
     </form>
 </div>
 <th:block th:replace="~{layout :: scripts}"></th:block>
+<!-- HTMX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.4/htmx.min.js"></script>
+<script>
+    /**
+     * Check Weather JS button handler.
+     * Calls GET /api/weather with Accept: application/json and renders the result.
+     * @param {string} inputId   - id of the location <input>    (default: "locationInput")
+     * @param {string} resultId  - id of the result <div>        (default: "weatherResult")
+     */
+    function checkWeatherJS(inputId = 'locationInput', resultId = 'weatherResult') {
+        const location = document.getElementById(inputId)?.value?.trim();
+        const resultDiv = document.getElementById(resultId);
+        if (!resultDiv) return;
+
+        if (!location) {
+            resultDiv.innerHTML = '<span class="text-muted">Enter a location first.</span>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<span class="text-muted">Checking weather…</span>';
+
+        fetch('/api/weather?location=' + encodeURIComponent(location), {
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(res => {
+                if (res.status === 401) throw new Error('unauthenticated');
+                if (!res.ok) throw new Error('server error');
+                return res.json();
+            })
+            .then(data => {
+                if (data.raining === null || data.raining === undefined) {
+                    resultDiv.innerHTML = '<span class="text-secondary">Weather data unavailable.</span>';
+                } else if (data.raining) {
+                    resultDiv.innerHTML = '<span class="badge bg-warning text-dark">Raining</span>';
+                } else {
+                    resultDiv.innerHTML = '<span class="badge bg-success">Clear</span>';
+                }
+            })
+            .catch(err => {
+                if (err.message === 'unauthenticated') {
+                    resultDiv.innerHTML = '<span class="text-danger">Please log in to check the weather.</span>';
+                } else {
+                    resultDiv.innerHTML = '<span class="text-danger">Could not fetch weather data.</span>';
+                }
+            });
+    }
+</script>
 </body>
 </html>
